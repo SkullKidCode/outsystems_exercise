@@ -11,8 +11,8 @@ pool:
 
 variables:
   - name: IMAGE_NAME
-    value: 'outsystems/helloworld'
-  - name: IMAGE_TAG
+    value: helloworld/$(Build.BuildId)
+  - name: PUSH_TAG
     value: $(Build.BuildId)
 
 steps:
@@ -23,6 +23,7 @@ steps:
     arguments: '-c Release'
     zipAfterPublish: false
     modifyOutputPath: false
+
 - task: Docker@2
   displayName: Build docker image
   inputs:
@@ -30,7 +31,7 @@ steps:
     Dockerfile: '**/Dockerfile'
     arguments: '-t $(IMAGE_NAME)'
     tags: |
-      $(IMAGE_TAG)
+      latest
 
 - task: ECRPushImage@1
   inputs:
@@ -38,5 +39,5 @@ steps:
     regionName: 'us-east-2'
     imageSource: imagename
     sourceImageName: $(IMAGE_NAME)
-    sourceImageTag: $(IMAGE_TAG)
     repositoryName: 'outsystems_exercise'
+    pushTag: $(PUSH_TAG)
