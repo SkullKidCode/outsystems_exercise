@@ -11,7 +11,9 @@ pool:
 
 variables:
   - name: IMAGE_NAME
-    value: 'helloworld/$(Build.BuildId)'
+    value: 'outsystems/helloworld'
+  - name: IMAGE_TAG
+    value: $(Build.BuildId)
 
 steps:
 - task: DotNetCoreCLI@2
@@ -28,7 +30,7 @@ steps:
     Dockerfile: '**/Dockerfile'
     arguments: '-t $(IMAGE_NAME)'
     tags: |
-      latest
+      $(IMAGE_TAG)
 
 - task: ECRPushImage@1
   inputs:
@@ -36,4 +38,5 @@ steps:
     regionName: 'us-east-2'
     imageSource: imagename
     sourceImageName: $(IMAGE_NAME)
+    sourceImageTag: $(IMAGE_TAG)
     repositoryName: 'outsystems_exercise'
