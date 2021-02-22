@@ -10,15 +10,28 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  - name: ECS_REPOSITORY
-    value: 149091607530.dkr.ecr.us-east-2.amazonaws.com/outsystems_exercise
+  - name: IMAGE_TAG
+    value: $(Build.BuildId)
 
 steps:
-- task: Docker@2
-  displayName: Build & push docker image
+- task: DotNetCoreCLI@2
   inputs:
-    repository: $(ECS_REPOSITORY)
-    command: buildAndPush
+    command: 'publish'
+    publishWebProjects: true
+    arguments: '-c Release'
+    zipAfterPublish: false
+    modifyOutputPath: false
+- task: Docker@2
+  displayName: Build docker image
+  inputs:
+    command: build
     Dockerfile: '**/Dockerfile'
     tags: |
-      latest
+      $(IMAGE_TAG)
+
+- task: ECRPushImage@1
+  inputs:
+    awsCredentials: 'AWS_ECS'
+    regionName: 'us-east-2'
+    imageSource: 'imagename'
+    repositoryName: 'outsystems_exercise'
