@@ -11,7 +11,7 @@ pool:
 
 variables:
   - name: IMAGE_NAME
-    value: 'HelloWorld/$(Build.BuildId)'
+    value: 'helloworld/$(Build.BuildId)'
 
 steps:
 - task: DotNetCoreCLI@2
