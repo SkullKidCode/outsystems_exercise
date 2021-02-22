@@ -10,8 +10,8 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  - name: IMAGE_TAG
-    value: $(Build.BuildId)
+  - name: IMAGE_NAME
+    value: 'HelloWorld/$(Build.BuildId)'
 
 steps:
 - task: DotNetCoreCLI@2
@@ -26,12 +26,14 @@ steps:
   inputs:
     command: build
     Dockerfile: '**/Dockerfile'
+    arguments: '-t $(IMAGE_NAME)'
     tags: |
-      $(IMAGE_TAG)
+      latest
 
 - task: ECRPushImage@1
   inputs:
     awsCredentials: 'AWS_ECS'
     regionName: 'us-east-2'
-    imageSource: 'imagename'
+    imageSource: imagename
+    sourceImageName: $(IMAGE_NAME)
     repositoryName: 'outsystems_exercise'
