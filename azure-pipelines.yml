@@ -32,6 +32,7 @@ steps:
       latest
 
 - task: ECRPushImage@1
+  displayName: Push Image to ECR
   inputs:
     awsCredentials: 'AWS_ECS'
     regionName: 'us-east-2'
@@ -39,3 +40,12 @@ steps:
     sourceImageName: $(IMAGE_NAME)
     repositoryName: 'outsystems_exercise'
     pushTag: $(PUSH_TAG)
+
+- task: AWSCLI@1
+  displayName: Update ECS Service to Deploy
+  inputs:
+    awsCredentials: 'AWS_ECS'
+    regionName: 'us-east-2'
+    awsCommand: 'ecs'
+    awsSubCommand: 'update-service'
+    awsArguments: '--cluster Application  --service HelloWorldService --desired-count 1'
